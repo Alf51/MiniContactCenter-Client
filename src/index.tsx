@@ -1,13 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import WebSocketComponent from "./WebSocketConnectiont";
+import {SendUrlButtons} from "./components/sendUrlButtons";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-      <WebSocketComponent></WebSocketComponent>
+      <SendUrlButtons buttonName={"Присоединиться по WS"}></SendUrlButtons>
   </React.StrictMode>
 );
 
