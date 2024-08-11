@@ -31,7 +31,7 @@ export function SendUrlButtons(obj: { buttonName: string }) {
             <button disabled={isConnection} onClick={() => connectWS()}>{obj.buttonName}</button>
             <button disabled={!isConnection} onClick={() => handleMessage(message)}>Отправить сообщение</button>
             <button disabled={!isConnection} onClick={() => disconnect()}>Отсоединиться от сервера</button>
-            <input type={'text'} onChange={handleText}></input>
+            <input value={inputText} type={'text'} onChange={handleText}></input>
         </div>
     );
 }
