@@ -1,10 +1,8 @@
 import React, {ChangeEvent, useEffect, useState} from "react";
-import {MyMessage, useWebSocketConnection} from '../webSocketConnectiont'
-import {useConnect} from "../socketConnection";
-import {text} from "node:stream/consumers";
+import {MyMessage, useConnect} from "../socketConnection";
 
 export function SendUrlButtons(obj: { buttonName: string }) {
-    const {sendMessage, connectWS, disconnect} = useConnect()
+    const {sendMessage, connectWS, disconnect, isConnection} = useConnect()
     const [inputText, setInputText] = useState<string>('')
     const [message, setMessage] = useState<MyMessage>({from: '', text: "hay from React"})
 
@@ -19,11 +17,20 @@ export function SendUrlButtons(obj: { buttonName: string }) {
         setInputText(event.target.value)
     }
 
+    const makeReset = () => {
+        setInputText('')
+    }
+
+    const handleMessage = (message: MyMessage) => {
+        sendMessage(message)
+        makeReset()
+    }
+
     return (
         <div>
-            <button onClick={() => connectWS()}>{obj.buttonName}</button>
-            <button onClick={() => sendMessage(message)}>Отправить сообщение</button>
-            <button onClick={() => disconnect()}>Отсоединиться от сервера</button>
+            <button disabled={isConnection} onClick={() => connectWS()}>{obj.buttonName}</button>
+            <button disabled={!isConnection} onClick={() => handleMessage(message)}>Отправить сообщение</button>
+            <button disabled={!isConnection} onClick={() => disconnect()}>Отсоединиться от сервера</button>
             <input type={'text'} onChange={handleText}></input>
         </div>
     );

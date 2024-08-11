@@ -1,7 +1,10 @@
 import {useRef, useState} from "react";
 import {Client} from "@stomp/stompjs";
-import {MyMessage} from "./webSocketConnectiont";
 
+export interface MyMessage {
+    from: string,
+    text: string
+}
 
 export function useConnect() {
     const clientRef = useRef(new Client())
@@ -49,5 +52,5 @@ export function useConnect() {
         }
     }
 
-    return {connectWS, sendMessage, disconnect}
+    return {connectWS, sendMessage, disconnect, isConnection}
 }
