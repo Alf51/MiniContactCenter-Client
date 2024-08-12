@@ -5,7 +5,6 @@ export interface MyMessage {
     from: string,
     text: string
 }
-
 export function useConnect() {
     const clientRef = useRef(new Client())
     const [isConnection, setConnection] = useState(false)
@@ -37,10 +36,12 @@ export function useConnect() {
     }
 
     const sendMessage = (message: MyMessage) => {
-        if (isConnection && clientRef.current) {
+        if (isConnection && clientRef.current && clientRef.current.connected) {
             clientRef.current.publish({destination: '/app/message', body: JSON.stringify(message)})
         } else {
-            console.log('Соединение не установленно')
+            setConnection(false)
+            clientRef.current.deactivate()
+            alert('Ошибка соединения')
         }
     }
 
