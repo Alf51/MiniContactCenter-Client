@@ -1,7 +1,7 @@
 import React, {ChangeEvent, useEffect, useState} from "react";
 import {MyMessage, useConnect} from "../socketConnection";
 
-export function SendUrlButtons(obj: { buttonName: string }) {
+export function WebSocketControlPanel(obj: { buttonName: string }) {
     const {sendMessage, connectWS, disconnect, isConnection} = useConnect()
     const [inputText, setInputText] = useState<string>('')
     const [message, setMessage] = useState<MyMessage>({from: '', text: "hay from React"})

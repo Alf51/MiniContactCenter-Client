@@ -14,6 +14,8 @@ export function useConnect() {
         const client = new Client({
                 brokerURL: "ws://localhost:8080/ws",
                 onConnect: frame => {
+                    setConnection(true)
+                    console.log("Соединение успешно")
                     client.subscribe("/topic/message", message => {
                         if (message) {
                             console.log("Ответ от сервера: ", message.body)
@@ -21,14 +23,17 @@ export function useConnect() {
                             console.log("Нет ответа от сервера")
                         }
                     })
+                },
+                onWebSocketError: event => {
+                    console.log('Веб-сокет соединение не установленно', event)
+                    setConnection(false)
+                    client.deactivate()
                 }
             }
         )
 
         clientRef.current = client
         clientRef.current.activate()
-        setConnection(true)
-        console.log("Соединение успешно")
     }
 
     const sendMessage = (message: MyMessage) => {

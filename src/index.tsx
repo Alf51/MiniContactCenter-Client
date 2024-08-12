@@ -1,13 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import {SendUrlButtons} from "./components/sendUrlButtons";
+import {WebSocketControlPanel} from "./components/webSocketControlPanel";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-      <SendUrlButtons buttonName={"Присоединиться по WS"}></SendUrlButtons>
+      <WebSocketControlPanel buttonName={"Присоединиться по WS"}></WebSocketControlPanel>
   </React.StrictMode>
 );
 
