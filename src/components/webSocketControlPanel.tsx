@@ -29,7 +29,7 @@ export function WebSocketControlPanel(obj: { buttonName: string }) {
     return (
         <div>
             <button disabled={isConnection} onClick={() => connectWS()}>{obj.buttonName}</button>
-            <button disabled={!isConnection} onClick={() => handleMessage(message)}>Отправить сообщение</button>
+            <button disabled={!isConnection || !inputText.trim()} onClick={() => handleMessage(message)}>Отправить сообщение</button>
             <button disabled={!isConnection} onClick={() => disconnect()}>Отсоединиться от сервера</button>
             <input  disabled={!isConnection} value={inputText} type={'text'} onChange={handleText}></input>
         </div>

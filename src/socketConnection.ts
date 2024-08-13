@@ -18,8 +18,6 @@ export function useConnect() {
                     client.subscribe("/topic/message", message => {
                         if (message) {
                             console.log("Ответ от сервера: ", message.body)
-                        } else {
-                            console.log("Нет ответа от сервера")
                         }
                     })
                 },
