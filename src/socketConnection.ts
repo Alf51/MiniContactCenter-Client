@@ -1,13 +1,16 @@
 import {useRef, useState} from "react";
 import {Client} from "@stomp/stompjs";
+import MessageStore from "./store/messageStore";
 
 export interface MyMessage {
     from: string,
     text: string
 }
+
 export function useConnect() {
     const clientRef = useRef(new Client())
     const [isConnection, setConnection] = useState(false)
+    const {addMessage} = MessageStore
 
     const connectWS = () => {
         const client = new Client({
@@ -17,7 +20,8 @@ export function useConnect() {
                     console.log("Соединение успешно")
                     client.subscribe("/topic/message", message => {
                         if (message) {
-                            console.log("Ответ от сервера: ", message.body)
+                            const answer = JSON.parse(message.body) as MyMessage
+                            addMessage(answer)
                         }
                     })
                 },
@@ -33,13 +37,15 @@ export function useConnect() {
         clientRef.current.activate()
     }
 
-    const sendMessage = (message: MyMessage) => {
+    const sendMessage = (message: MyMessage): boolean => {
         if (isConnection && clientRef.current && clientRef.current.connected) {
             clientRef.current.publish({destination: '/app/message', body: JSON.stringify(message)})
+            return true
         } else {
             setConnection(false)
             clientRef.current.deactivate()
             alert('Ошибка соединения')
+            return false
         }
     }
 

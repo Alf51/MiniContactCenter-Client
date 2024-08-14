@@ -1,14 +1,16 @@
 import React, {ChangeEvent, useEffect, useState} from "react";
 import {MyMessage, useConnect} from "../socketConnection";
+import MessageStore from "../store/messageStore";
 
 export function WebSocketControlPanel(obj: { buttonName: string }) {
     const {sendMessage, connectWS, disconnect, isConnection} = useConnect()
     const [inputText, setInputText] = useState<string>('')
     const [message, setMessage] = useState<MyMessage>({from: '', text: "hay from React"})
+    const {addMessage} = MessageStore
 
     useEffect(() => {
         setMessage({
-            from: "",
+            from: "front",
             text: inputText
         })
     }, [inputText])
@@ -22,7 +24,9 @@ export function WebSocketControlPanel(obj: { buttonName: string }) {
     }
 
     const handleMessage = (message: MyMessage) => {
-        sendMessage(message)
+        if (sendMessage(message)) {
+            addMessage(message)
+        }
         makeReset()
     }
 

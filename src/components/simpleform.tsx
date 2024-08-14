@@ -1,7 +1,6 @@
 import {MyMessage} from "../socketConnection";
 import MessageStore from "../store/messageStore";
 import {observer} from "mobx-react-lite";
-import {useEffect} from "react";
 
 export const SimpleForm = observer(() => {
     const {messages} = MessageStore;
@@ -18,7 +17,8 @@ function getOneStringMessage(messages: MyMessage[]): string {
     console.log('getOneStringMessage')
     let simpleString = ''
 
-    messages.forEach(element => simpleString = simpleString.concat(element.text + '\n'))
+    //todo на reduce ?
+    messages.forEach(element => simpleString = simpleString.concat(`${element.from}: ${element.text}\n`))
     return simpleString = simpleString.trim()
 }
 
