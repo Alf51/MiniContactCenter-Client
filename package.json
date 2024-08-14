@@ -13,6 +13,8 @@
     "@types/react-dom": "^18.3.0",
     "@types/sockjs": "^0.3.36",
     "i": "^0.3.7",
+    "mobx": "^6.13.1",
+    "mobx-react-lite": "^4.0.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-scripts": "5.0.1",
