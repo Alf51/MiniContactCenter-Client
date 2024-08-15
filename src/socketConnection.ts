@@ -2,9 +2,11 @@ import {useRef, useState} from "react";
 import {Client} from "@stomp/stompjs";
 import MessageStore from "./store/messageStore";
 
+//todo to убрать и сделать опциональным
 export interface MyMessage {
     from: string,
-    text: string
+    text: string,
+    to: string
 }
 
 export function useConnect() {
@@ -12,7 +14,7 @@ export function useConnect() {
     const [isConnection, setConnection] = useState(false)
     const {addMessage} = MessageStore
 
-    const connectWS = () => {
+    const connectWS = (login: string) => {
         const client = new Client({
                 brokerURL: "ws://localhost:8080/ws",
                 onConnect: frame => {
@@ -20,6 +22,14 @@ export function useConnect() {
                     console.log("Соединение успешно")
                     client.subscribe("/topic/message", message => {
                         if (message) {
+                            const answer = JSON.parse(message.body) as MyMessage
+                            addMessage(answer)
+                        }
+                    })
+                    //todo логин вписать
+                    client.subscribe(`/topic/message/private-${login}`, message => {
+                        if (message) {
+                            console.log('получили приват сообщение')
                             const answer = JSON.parse(message.body) as MyMessage
                             addMessage(answer)
                         }

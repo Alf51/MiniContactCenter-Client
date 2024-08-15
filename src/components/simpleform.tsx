@@ -7,14 +7,14 @@ export const SimpleForm = observer(() => {
 
     return (
         <form>
-            <textarea readOnly={true} cols={45} rows={5} value={getOneStringMessage(messages)}>
+            <textarea readOnly={true} cols={45} rows={5}
+                      value={messages.length === 0 ? 'Переписка ещё не начата' : getOneStringMessage(messages)}>
             </textarea>
         </form>
     )
 })
 
 function getOneStringMessage(messages: MyMessage[]): string {
-    console.log('getOneStringMessage')
     let simpleString = ''
 
     //todo на reduce ?
