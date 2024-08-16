@@ -59,6 +59,20 @@ export function useConnect() {
         }
     }
 
+    //todo похоже на sendMessage
+
+    const sendPrivateMessage = (message: MyMessage): boolean => {
+        if (isConnection && clientRef.current && clientRef.current.connected) {
+            clientRef.current.publish({destination: '/app/message/private', body: JSON.stringify(message)})
+            return true
+        } else {
+            setConnection(false)
+            clientRef.current.deactivate()
+            alert('Ошибка соединения')
+            return false
+        }
+    }
+
     const disconnect = () => {
         if (clientRef.current && isConnection) {
             clientRef.current.deactivate()
@@ -72,5 +86,5 @@ export function useConnect() {
         }
     }
 
-    return {connectWS, sendMessage, disconnect, isConnection}
+    return {connectWS, sendMessage, disconnect, isConnection, sendPrivateMessage}
 }

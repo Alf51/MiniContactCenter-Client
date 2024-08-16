@@ -3,8 +3,9 @@ import {MyMessage, useConnect} from "../socketConnection";
 import MessageStore from "../store/messageStore";
 
 export function WebSocketControlPanel(obj: { buttonName: string }) {
-    const {sendMessage, connectWS, disconnect, isConnection} = useConnect()
-    const [inputText, setInputText] = useState<string>('')
+    const {sendMessage, sendPrivateMessage, connectWS, disconnect, isConnection} = useConnect()
+    const [inputMessage, setInputMessage] = useState<string>('')
+    const [inputPrivateMessage, setInputPrivateMessage] = useState<string>('')
     const [login, setLogin] = useState<string>('')
     const [to, setTo] = useState<string>('')
     const [message, setMessage] = useState<MyMessage>({from: '', text: "hay from React", to: ''})
@@ -13,13 +14,18 @@ export function WebSocketControlPanel(obj: { buttonName: string }) {
     useEffect(() => {
         setMessage({
             from: login,
-            text: inputText,
+            text: inputMessage,
             to: to
         })
-    }, [inputText])
+    }, [inputMessage])
 
+    //todo не понятно текст чего ? А есть ещё и handleMessage
     const handleText = (event: ChangeEvent<HTMLInputElement>) => {
-        setInputText(event.target.value)
+        setInputMessage(event.target.value)
+    }
+
+    const handlePrivateText = (event: ChangeEvent<HTMLInputElement>) => {
+        setInputPrivateMessage(event.target.value)
     }
 
     const handleLogin = (event: ChangeEvent<HTMLInputElement>) => {
@@ -31,7 +37,8 @@ export function WebSocketControlPanel(obj: { buttonName: string }) {
     }
 
     const makeReset = () => {
-        setInputText('')
+        setInputMessage('')
+        setInputPrivateMessage('')
     }
 
     const handleMessage = (message: MyMessage) => {
@@ -44,24 +51,37 @@ export function WebSocketControlPanel(obj: { buttonName: string }) {
     //todo мб как то объединить с handleMessage?
     //todo пока не готово
     const handleMessagePrivate = (message: MyMessage) => {
-        if (sendMessage(message)) {
+        if (sendPrivateMessage(message)) {
             addMessage(message)
         }
         makeReset()
     }
 
+    const handleConnect = () => {
+        connectWS(login)
+    }
+
     return (
         <div>
-            <button disabled={isConnection} onClick={() => connectWS(login)}>{obj.buttonName}</button>
-            <button disabled={!isConnection || !inputText.trim()} onClick={() => handleMessage(message)}>Отправить
-                сообщение
-            </button>
+            <label>Введи своё имя: </label>
+            <input disabled={isConnection} value={login} type={'text'} onChange={handleLogin}></input>
+            <button disabled={isConnection || login.trim().length === 0}
+                    onClick={handleConnect}>{obj.buttonName}</button>
             <button disabled={!isConnection} onClick={() => disconnect()}>Отсоединиться от сервера</button>
-            <input disabled={!isConnection} value={inputText} type={'text'} onChange={handleText}></input>
+
             <br/>
-            <input value={login} type={'text'} onChange={handleLogin}></input>
-            <input value={to} type={'text'} onChange={handleTo}></input>
-            <button onClick={() => handleMessagePrivate(message)}>Отправить сообщение: {to}</button>
+            <label>Имя получателя: </label>
+            <input disabled={!isConnection} value={to} type={'text'} onChange={handleTo}></input>
+            <br/>
+            <br/>
+
+            <input disabled={!isConnection} value={inputMessage} type={'text'} onChange={handleText}></input>
+            <button disabled={!isConnection || !inputMessage.trim()} onClick={() => handleMessage(message)}>Отправить
+                сообщение на сервер
+            </button>
+            <button disabled={!isConnection || to.trim().length === 0 || !inputMessage.trim()}
+                    onClick={() => handleMessagePrivate(message)}>Отправить
+                сообщение: {to}</button>
         </div>
     );
 }
