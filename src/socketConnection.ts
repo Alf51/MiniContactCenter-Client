@@ -1,4 +1,4 @@
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {Client} from "@stomp/stompjs";
 import MessageStore from "./store/messageStore";
 
@@ -9,10 +9,14 @@ export interface MyMessage {
     to: string
 }
 
+export interface LoginsMessage {
+    logins: Set<string>
+}
+
 export function useConnect() {
     const clientRef = useRef(new Client())
     const [isConnection, setConnection] = useState(false)
-    const {addMessage} = MessageStore
+    const {addMessage, setLogins} = MessageStore
 
     const connectWS = (login: string) => {
         const client = new Client({
@@ -20,18 +24,28 @@ export function useConnect() {
                 onConnect: frame => {
                     setConnection(true)
                     console.log("Соединение успешно")
+
+                    //Отправил логин, который онлайн
+                    client.publish({destination: '/app/registerLogin', body: login})
+
                     client.subscribe("/topic/message", message => {
                         if (message) {
                             const answer = JSON.parse(message.body) as MyMessage
                             addMessage(answer)
                         }
                     })
-                    //todo логин вписать
                     client.subscribe(`/topic/message/private-${login}`, message => {
                         if (message) {
                             console.log('получили приват сообщение')
                             const answer = JSON.parse(message.body) as MyMessage
                             addMessage(answer)
+                        }
+                    })
+                    client.subscribe(`/topic/logins`, message => {
+                        if (message) {
+                            const logins = new Set<string>(JSON.parse(message.body))
+                            logins.delete(login)
+                            setLogins(logins)
                         }
                     })
                 },
