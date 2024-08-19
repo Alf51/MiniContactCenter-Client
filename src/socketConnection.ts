@@ -9,14 +9,24 @@ export interface MyMessage {
     to: string
 }
 
-export interface LoginsMessage {
-    logins: Set<string>
-}
-
 export function useConnect() {
     const clientRef = useRef(new Client())
     const [isConnection, setConnection] = useState(false)
+    const [login, setLogin] = useState<string | null>(null)
     const {addMessage, setLogins} = MessageStore
+
+    useEffect(() => {
+        //Отправил логин, который онлайн
+        if (isConnection && login) {
+            const interval= setInterval(() => {
+                console.log('Отправили данные логин ', login)
+                clientRef.current.publish({destination: '/app/registerLogin', body: login})
+            }, 3000)
+
+            return () => clearInterval(interval)
+        }
+
+    }, [login, isConnection])
 
     const connectWS = (login: string) => {
         const client = new Client({
@@ -24,9 +34,7 @@ export function useConnect() {
                 onConnect: frame => {
                     setConnection(true)
                     console.log("Соединение успешно")
-
-                    //Отправил логин, который онлайн
-                    client.publish({destination: '/app/registerLogin', body: login})
+                    setLogin(login)
 
                     client.subscribe("/topic/message", message => {
                         if (message) {
@@ -53,6 +61,7 @@ export function useConnect() {
                     console.log('Веб-сокет соединение не установленно', event)
                     setConnection(false)
                     client.deactivate()
+                    setLogin(null)
                 }
             }
         )
