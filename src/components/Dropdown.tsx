@@ -6,7 +6,6 @@ interface DropDownProps {
     onSelected: (value: string) => void
 }
 
-//todo эже просто список. Название так себе. Мб пропсы передавать ? А не из стора брать ? Например в классе обёртки следить за стора и отдавать готовое
 export const Dropdown: React.FC<DropDownProps> = observer(({names, onSelected}) => {
     return (
         <select defaultValue={''} onChange={event => onSelected(event.target.value)} >

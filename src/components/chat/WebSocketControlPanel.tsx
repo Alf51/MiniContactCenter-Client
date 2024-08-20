@@ -1,11 +1,10 @@
 import React, {ChangeEvent, useEffect, useState} from "react";
-import {MyMessage, useConnect} from "../socketConnection";
-import MessageStore from "../store/messageStore";
-import {Dropdown} from "./dropdown";
+import {MyMessage, useConnect} from "../../socketConnection";
+import MessageStore from "../../store/messageStore";
+import {Dropdown} from "../Dropdown";
 import {observer} from "mobx-react-lite";
-import {ObservableSet} from "mobx";
 
-export const WebSocketControlPanel = observer((obj: { buttonName: string }) => {
+export const WebSocketControlPanel = observer ((obj: { buttonName: string }) => {
     const {sendMessage, sendPrivateMessage, connectWS, disconnect, isConnection} = useConnect()
     const [inputMessage, setInputMessage] = useState<string>('')
     const [login, setLogin] = useState<string>('')
@@ -57,7 +56,6 @@ export const WebSocketControlPanel = observer((obj: { buttonName: string }) => {
         connectWS(login)
     }
 
-
     return (
         <div>
             <label>Введи своё имя: </label>
@@ -68,10 +66,6 @@ export const WebSocketControlPanel = observer((obj: { buttonName: string }) => {
 
             <br/>
             <br/>
-            {/*<label>Имя получателя: </label>*/}
-            {/*<input disabled={!isConnection} value={to} type={'text'} onChange={handleTo}></input>*/}
-            {/*<br/>*/}
-            {/*<br/>*/}
 
             <input disabled={!isConnection} value={inputMessage} type={'text'} onChange={handleText}></input>
             <button disabled={!isConnection || !inputMessage.trim()} onClick={() => handleMessage(message)}>Отправить
