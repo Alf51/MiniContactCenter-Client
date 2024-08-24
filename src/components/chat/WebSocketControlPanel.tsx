@@ -18,10 +18,9 @@ export const WebSocketControlPanel = observer ((obj: { buttonName: string }) => 
             text: inputMessage,
             to: to
         })
-    }, [inputMessage])
+    }, [inputMessage, to])
 
-    //todo не понятно текст чего ? А есть ещё и handleMessage
-    const handleText = (event: ChangeEvent<HTMLInputElement>) => {
+    const handleInputText = (event: ChangeEvent<HTMLInputElement>) => {
         setInputMessage(event.target.value)
     }
     const handleLogin = (event: ChangeEvent<HTMLInputElement>) => {
@@ -44,7 +43,6 @@ export const WebSocketControlPanel = observer ((obj: { buttonName: string }) => 
     }
 
     //todo мб как то объединить с handleMessage?
-    //todo пока не готово
     const handleMessagePrivate = (message: MyMessage) => {
         if (sendPrivateMessage(message)) {
             addMessage(message)
@@ -54,6 +52,12 @@ export const WebSocketControlPanel = observer ((obj: { buttonName: string }) => 
 
     const handleConnect = () => {
         connectWS(login)
+    }
+
+    const getAllLoginsWithoutCurrentLogin = (): string[] => {
+        const loginsWithoutCurrentLogins = new Set<string>(logins)
+        loginsWithoutCurrentLogins.delete(login)
+        return [...loginsWithoutCurrentLogins]
     }
 
     return (
@@ -67,7 +71,7 @@ export const WebSocketControlPanel = observer ((obj: { buttonName: string }) => 
             <br/>
             <br/>
 
-            <input disabled={!isConnection} value={inputMessage} type={'text'} onChange={handleText}></input>
+            <input disabled={!isConnection} value={inputMessage} type={'text'} onChange={handleInputText}></input>
             <button disabled={!isConnection || !inputMessage.trim()} onClick={() => handleMessage(message)}>Отправить
                 сообщение на сервер
             </button>
@@ -76,7 +80,7 @@ export const WebSocketControlPanel = observer ((obj: { buttonName: string }) => 
                 сообщение: {to}</button>
             <br/>
             <br/>
-            <Dropdown onSelected={handleTo} names={[...logins]}></Dropdown>
+            <Dropdown onSelected={handleTo} names={getAllLoginsWithoutCurrentLogin()}></Dropdown>
         </div>
     );
 })

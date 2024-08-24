@@ -1,8 +1,9 @@
 import {MyMessage} from "../socketConnection";
-import {action, computed, makeObservable, observable, ObservableSet} from "mobx";
+import {action, makeObservable, observable} from "mobx";
 
 class MessageStore {
     messages: MyMessage[] = []
+    //todo мб это не сюда положить, странно что в Store с сообщениями попали все логины
     logins = observable.set<string>()
 
     constructor() {
@@ -11,7 +12,8 @@ class MessageStore {
             logins: observable,
             addMessage: action,
             addLogin: action,
-            setLogins: action
+            setLogins: action,
+            deleteLogin: action
         })
     }
 
@@ -26,6 +28,10 @@ class MessageStore {
     setLogins = (logins: Set<string>) => {
         this.logins.clear()
         logins.forEach(element => this.addLogin(element))
+    }
+
+    deleteLogin = (login: string) => {
+        this.logins.delete(login)
     }
 }
 

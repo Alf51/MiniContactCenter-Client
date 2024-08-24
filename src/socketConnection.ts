@@ -1,32 +1,20 @@
-import {useEffect, useRef, useState} from "react";
+import {useRef, useState} from "react";
 import {Client} from "@stomp/stompjs";
 import MessageStore from "./store/messageStore";
+import {ObservableSet} from "mobx";
 
 //todo to убрать и сделать опциональным
+//todo Переименовать в целом
 export interface MyMessage {
-    from: string,
-    text: string,
+    from: string
+    text: string
     to: string
 }
 
 export function useConnect() {
     const clientRef = useRef(new Client())
     const [isConnection, setConnection] = useState(false)
-    const [login, setLogin] = useState<string | null>(null)
-    const {addMessage, setLogins} = MessageStore
-
-    useEffect(() => {
-        //Отправил логин, который онлайн
-        if (isConnection && login) {
-            const interval= setInterval(() => {
-                console.log('Отправили данные логин ', login)
-                clientRef.current.publish({destination: '/app/registerLogin', body: login})
-            }, 3000)
-
-            return () => clearInterval(interval)
-        }
-
-    }, [login, isConnection])
+    const {addMessage, deleteLogin, addLogin, setLogins} = MessageStore
 
     const connectWS = (login: string) => {
         const client = new Client({
@@ -34,7 +22,7 @@ export function useConnect() {
                 onConnect: frame => {
                     setConnection(true)
                     console.log("Соединение успешно")
-                    setLogin(login)
+                    // setLogin(login)
 
                     client.subscribe("/topic/message", message => {
                         if (message) {
@@ -42,6 +30,7 @@ export function useConnect() {
                             addMessage(answer)
                         }
                     })
+
                     client.subscribe(`/topic/message/private-${login}`, message => {
                         if (message) {
                             console.log('получили приват сообщение')
@@ -49,19 +38,30 @@ export function useConnect() {
                             addMessage(answer)
                         }
                     })
-                    client.subscribe(`/topic/logins`, message => {
+
+                    client.subscribe(`/topic/loginDisconnect`, message => {
                         if (message) {
-                            const logins = new Set<string>(JSON.parse(message.body))
-                            logins.delete(login)
+                            const login = message.body
+                            deleteLogin(login)
+                        }
+                    })
+
+                    //todo переименовать в  user-online (или по аналогии).
+                    client.subscribe(`/topic/onlineLogins`, message => {
+                        if (message) {
+                            const logins = new ObservableSet<string>(JSON.parse(message.body))
+                            console.log(`Получили все логины ${logins}`)
                             setLogins(logins)
                         }
                     })
+
+                    client.publish({destination: '/app/registerLogin', body: login})
+
                 },
                 onWebSocketError: event => {
                     console.log('Веб-сокет соединение не установленно', event)
                     setConnection(false)
                     client.deactivate()
-                    setLogin(null)
                 }
             }
         )
@@ -82,7 +82,7 @@ export function useConnect() {
         }
     }
 
-    //todo похоже на sendMessage
+    //todo похоже на sendMessage. Можно объединить ?
 
     const sendPrivateMessage = (message: MyMessage): boolean => {
         if (isConnection && clientRef.current && clientRef.current.connected) {
@@ -101,7 +101,7 @@ export function useConnect() {
             clientRef.current.deactivate()
                 .then(() => {
                     setConnection(false)
-                    console.log('Соединение разорванно')
+                    console.log('Соединение разорвано')
                 })
                 .catch((e) => console.log('Ошибка при попытке разорвать соединение ', e))
         } else {
