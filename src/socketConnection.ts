@@ -19,6 +19,9 @@ export function useConnect() {
     const connectWS = (login: string) => {
         const client = new Client({
                 brokerURL: "ws://localhost:8080/ws",
+                connectHeaders: {
+                    login: login
+                },
                 onConnect: frame => {
                     setConnection(true)
                     console.log("Соединение успешно")
@@ -46,17 +49,22 @@ export function useConnect() {
                         }
                     })
 
+                    client.subscribe(`/topic/loginConnected`, message => {
+                        if (message) {
+                            const login = message.body
+                            addLogin(login)
+                        }
+                    })
+
                     //todo переименовать в  user-online (или по аналогии).
-                    client.subscribe(`/topic/onlineLogins`, message => {
+                    client.subscribe(`/topic/onlineLogins/${login}`, message => {
                         if (message) {
                             const logins = new ObservableSet<string>(JSON.parse(message.body))
-                            console.log(`Получили все логины ${logins}`)
                             setLogins(logins)
                         }
                     })
 
-                    client.publish({destination: '/app/registerLogin', body: login})
-
+                    client.publish({destination: '/app/requestOnlineLogins'})
                 },
                 onWebSocketError: event => {
                     console.log('Веб-сокет соединение не установленно', event)
