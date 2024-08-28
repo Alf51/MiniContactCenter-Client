@@ -8,7 +8,7 @@ export const WebChatPanel = observer (() => {
     const {messages} = MessageStore
 
     return (
-        <div>
+        <div className="container mt-4">
             <SimpleForm messages={messages}></SimpleForm>
             <WebSocketControlPanel buttonName={"Присоединиться по WS"}></WebSocketControlPanel>
         </div>

@@ -61,26 +61,63 @@ export const WebSocketControlPanel = observer ((obj: { buttonName: string }) => 
     }
 
     return (
-        <div>
-            <label>Введи своё имя: </label>
-            <input disabled={isConnection} value={login} type={'text'} onChange={handleLogin}></input>
-            <button disabled={isConnection || login.trim().length === 0}
-                    onClick={handleConnect}>{obj.buttonName}</button>
-            <button disabled={!isConnection} onClick={() => disconnect()}>Отсоединиться от сервера</button>
+        <div className="container mt-3">
+            <div className="mb-3">
+                <label className="form-label">Введи своё имя:</label>
+                <input
+                    className="form-control"
+                    disabled={isConnection}
+                    value={login}
+                    type="text"
+                    onChange={handleLogin}
+                />
+            </div>
 
-            <br/>
-            <br/>
+            <div className="mb-3">
+                <button
+                    className={`btn btn-primary me-2 ${isConnection || login.trim().length === 0 ? 'opacity-50' : 'opacity-100'}`}
+                    disabled={isConnection || login.trim().length === 0}
+                    onClick={handleConnect}
+                >
+                    {obj.buttonName}
+                </button>
+                <button
+                    className={`btn btn-secondary ${!isConnection ? 'opacity-50' : 'opacity-100'}`}
+                    disabled={!isConnection}
+                    onClick={disconnect}
+                >
+                    Отсоединиться от сервера
+                </button>
+            </div>
 
-            <input disabled={!isConnection} value={inputMessage} type={'text'} onChange={handleInputText}></input>
-            <button disabled={!isConnection || !inputMessage.trim()} onClick={() => handleMessage(message)}>Отправить
-                сообщение на сервер
-            </button>
-            <button disabled={!isConnection || to.trim().length === 0 || !inputMessage.trim()}
-                    onClick={() => handleMessagePrivate(message)}>Отправить
-                сообщение: {to}</button>
-            <br/>
-            <br/>
-            <Dropdown onSelected={handleTo} names={getAllLoginsWithoutCurrentLogin()}></Dropdown>
+            <div className="mb-3">
+                <input
+                    className="form-control"
+                    disabled={!isConnection}
+                    value={inputMessage}
+                    type="text"
+                    onChange={handleInputText}
+                />
+            </div>
+
+            <div className="mb-3 d-flex flex-wrap">
+                <button
+                    className={`btn btn-success me-2 ${!isConnection || !inputMessage.trim() ? 'opacity-50' : 'opacity-100'}`}
+                    disabled={!isConnection || !inputMessage.trim()}
+                    onClick={() => handleMessage(message)}
+                >
+                    Отправить сообщение на сервер
+                </button>
+                <button
+                    className={`btn btn-info ${!isConnection || to.trim().length === 0 || !inputMessage.trim() ? 'opacity-50' : 'opacity-100'}`}
+                    disabled={!isConnection || to.trim().length === 0 || !inputMessage.trim()}
+                    onClick={() => handleMessagePrivate(message)}
+                >
+                    Отправить сообщение: {to}
+                </button>
+            </div>
+
+            <Dropdown onSelected={handleTo} names={getAllLoginsWithoutCurrentLogin()}/>
         </div>
     );
 })

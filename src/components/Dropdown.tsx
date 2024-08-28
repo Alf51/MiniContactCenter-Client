@@ -8,7 +8,7 @@ interface DropDownProps {
 
 export const Dropdown: React.FC<DropDownProps> = observer(({names, onSelected}) => {
     return (
-        <select defaultValue={''} onChange={event => onSelected(event.target.value)} >
+        <select className="form-select" defaultValue={''} onChange={event => onSelected(event.target.value)}>
             <option value={''} disabled>Выберете имя</option>
             {names.map(login => (
                 <option key={login}>{login}</option>
